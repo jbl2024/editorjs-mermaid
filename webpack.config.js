@@ -1,6 +1,12 @@
+const webpack = require('webpack');
+
 module.exports = {
   mode: 'production',
   entry: './src/index.js',
+  optimization: {
+    splitChunks: false,
+    runtimeChunk: false,
+  },
   module: {
     rules: [
       {
@@ -31,5 +37,8 @@ module.exports = {
     library: 'MermaidTool',
     libraryTarget: 'umd',
     libraryExport: 'default'
-  }
+  },
+  plugins: [
+    new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 })
+  ]
 };
