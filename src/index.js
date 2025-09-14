@@ -1,7 +1,6 @@
-const mermaid = require('mermaid');
-const { nanoid } = require('nanoid');
-
-require('./index.css').toString();
+import mermaid from 'mermaid';
+import { nanoid } from 'nanoid';
+import './index.css';
 
 const generateId = (prefix) => {
     return `${prefix}${nanoid(10)}`;
@@ -9,7 +8,8 @@ const generateId = (prefix) => {
 
 class MermaidTool {
     static config(config) {
-        mermaid.initialize(config);
+        // Configure Mermaid (v11 compatible)
+        mermaid.initialize({ startOnLoad: false, ...config });
     }
 
     static get toolbox() {
@@ -29,13 +29,17 @@ class MermaidTool {
         this.readOnly = readOnly;
     }
 
-    parse(code, preview, container) {
+    async parse(code, preview, container) {
         preview.classList.remove('mermaid-preview-error');
         try {
-            const svg = mermaid.render(generateId('svg-'), code, undefined, container);
-            //const svg = mermaid.render(generateId('svg-'), code);
+            const id = generateId('svg-');
+            const { svg, bindFunctions } = await mermaid.render(id, code, container);
             preview.innerHTML = '';
             preview.insertAdjacentHTML('afterbegin', svg);
+            const inserted = preview.firstElementChild;
+            if (bindFunctions && inserted) {
+                bindFunctions(inserted);
+            }
         }
         catch (e) {
             preview.classList.add('mermaid-preview-error');
@@ -101,10 +105,10 @@ class MermaidTool {
 
     save(blockContent) {
         return {
-            'code': blockContent.querySelector('textarea').value,
-            'caption': blockContent.querySelector('.mermaid-caption').innerText,
+            'code': blockContent.querySelector('textarea')?.value || '',
+            'caption': blockContent.querySelector('.mermaid-caption')?.innerText || '',
         }
     }
 }
 
-module.exports = MermaidTool;
+export default MermaidTool;

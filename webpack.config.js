@@ -29,6 +29,7 @@ module.exports = {
     publicPath: '/',
     filename: 'bundle.js',
     library: 'MermaidTool',
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
+    libraryExport: 'default'
   }
 };
